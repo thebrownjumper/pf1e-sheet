@@ -74,6 +74,29 @@ only channel between them — work that has not been pushed does not exist to th
 This is a working discipline, not a security boundary — John owns both machines and can
 override it whenever he says so explicitly.
 
+### What the authoring machine owes the reviewer
+
+Written from the reviewing side. Each of these exists because without it a review either
+cannot run or cannot reach a verdict.
+
+- **Keep every npm script cross-platform.** The reviewer runs Windows. `rm -rf`, `cp`, `mv`,
+  `touch`, `$(...)`, single-quoted arguments and `&&`-chained shell builtins all fail there.
+  Use Node for anything a script must do to the filesystem, and keep scripts to bare tool
+  invocations otherwise. This is the single most common way a green PR on Fedora is unrunnable
+  on Windows.
+- **One work package per pull request**, with the number in the title (`WP2.2: stacking
+  resolver`). The description states which *done when* criterion from
+  [`docs/04-roadmap.md`](docs/04-roadmap.md) it satisfies, so review is checked against an
+  agreed target rather than taste.
+- **Tests ship in the same pull request as the code they cover.** A PR that adds rules logic
+  without tests cannot be reviewed for correctness, only for style.
+- **Never force-push a branch that is under review.** Corrections go on as new commits;
+  history is tidied at merge if at all. A rewritten branch discards the review already done
+  and forces a full re-read.
+- **Justify any change to a golden fixture in the PR description** — which rule changed, and
+  where in the rulebook it says so. A fixture whose expected numbers move is either a fix or a
+  regression, and the diff alone cannot tell the reviewer which.
+
 ## Environment
 
 Developed across a Windows machine and a Fedora laptop. Keep everything path-agnostic: no
