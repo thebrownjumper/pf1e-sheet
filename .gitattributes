@@ -1,0 +1,19 @@
+# Normalise line endings: LF in the repository, native in the working tree.
+# Without this, moving between Windows and Fedora produces whole-file diffs.
+* text=auto eol=lf
+
+# Windows-only files keep CRLF
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# Binaries are never touched
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.woff  binary
+*.woff2 binary
+*.ttf  binary
+*.otf  binary
+*.pdf  binary
