@@ -1,0 +1,24 @@
+#!/bin/sh
+# Refuse to push directly to main. Changes reach main through a pull request,
+# so that the machine which did not write them gets to review them first.
+#
+# Enabled by `git config core.hooksPath .githooks`, which each clone must set
+# once — git will not do it for you, by design.
+#
+# To bypass deliberately: git push --no-verify
+
+protected="refs/heads/main"
+
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+	if [ "$remote_ref" = "$protected" ]; then
+		echo "pre-push: refusing to push directly to main." >&2
+		echo >&2
+		echo "  Open a pull request instead, and let the other machine review it." >&2
+		echo "  See the Division of labour section of CLAUDE.md." >&2
+		echo >&2
+		echo "  Deliberate override: git push --no-verify" >&2
+		exit 1
+	fi
+done
+
+exit 0
