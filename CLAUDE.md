@@ -58,18 +58,32 @@ See [`docs/adr/`](docs/adr/) for the reasoning.
 
 ## Division of labour
 
-Two machines, each running Claude Code against this same repository, with deliberately
-different jobs. They share no state except what is pushed to `origin`, so the remote is the
-only channel between them — work that has not been pushed does not exist to the other side.
+Two machines, each running Claude Code against this same repository. They share no state
+except what is pushed to `origin`, so the remote is the only channel between them — work that
+has not been pushed does not exist to the other side.
 
-- **The Fedora laptop authors.** Implementation, refactoring, docs. It creates the branch,
-  makes the commits, pushes, and opens the pull request.
-- **The Windows PC reviews and tests.** It pulls the branch, runs the tests, exercises the
-  behaviour, and comments on the pull request. It does not author the feature it is reviewing —
-  the value of the split is that the reviewer did not write the code.
+**The invariant: whoever did not write the change reviews it.** Roles follow the change, not
+the machine. Either machine may author; the other one reviews. This is the whole point of the
+split — a reviewer who wrote the code re-reads their own reasoning and finds nothing.
+
+- The authoring machine creates the branch, makes the commits, pushes, and opens the pull
+  request.
+- The reviewing machine pulls the branch, runs the tests, exercises the behaviour, and reviews
+  on the pull request. It says what is wrong; it does not silently rewrite the change.
 - Fixes arising from a review go back to the authoring machine, on the same branch, as new
-  commits. The reviewer says what is wrong; it does not silently rewrite it.
+  commits.
 - The pull request is merged only once review has passed. Branches are deleted after merge.
+
+Two things follow from the machines being different, and they are tendencies rather than
+rules. Anything whose correctness depends on the platform — npm scripts, path handling, line
+endings — is only really reviewed once the Windows machine has run it, so a cross-platform
+change wants the Fedora side to author. And because review is the scarcer, more valuable pass,
+the machine John is sitting at is usually the one that should author.
+
+Both machines push as the same GitHub account, so GitHub will not accept an *approve* or
+*request changes* review from either — it refuses those on your own pull request. Reviews land
+as comments, and the verdict is stated in the text. The rule is enforced by convention, not by
+the platform.
 
 This is a working discipline, not a security boundary — John owns both machines and can
 override it whenever he says so explicitly.
