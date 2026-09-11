@@ -79,11 +79,18 @@ override it whenever he says so explicitly.
 Written from the reviewing side. Each of these exists because without it a review either
 cannot run or cannot reach a verdict.
 
-- **Keep every npm script cross-platform.** The reviewer runs Windows. `rm -rf`, `cp`, `mv`,
-  `touch`, `$(...)`, single-quoted arguments and `&&`-chained shell builtins all fail there.
-  Use Node for anything a script must do to the filesystem, and keep scripts to bare tool
-  invocations otherwise. This is the single most common way a green PR on Fedora is unrunnable
-  on Windows.
+- **Keep every npm script cross-platform.** The reviewer runs Windows, where npm executes
+  scripts through `cmd.exe`. Verified on that machine: `&&` chaining works and is safe to use;
+  Unix filesystem commands (`rm`, `cp`, `mv`, `touch`), command substitution (`$(...)`) and
+  single-quoted arguments do not. The one that bites most often is an inline environment
+  variable — `"test:ci": "NODE_ENV=test vitest run"` runs on Fedora, and on Windows exits 1
+  with `'NODE_ENV' is not recognized as an internal or external command`. Use `cross-env` for
+  those, Node for anything a script must do to the filesystem, and bare tool invocations
+  otherwise.
+
+  A trap when checking this yourself: Git for Windows ships its own `rm.exe` and `cp.exe` and
+  puts them on `PATH`, so a script using them passes when npm is launched from Git Bash and
+  still fails from PowerShell or `cmd`. Verify from PowerShell, not Git Bash.
 - **One work package per pull request**, with the number in the title (`WP2.2: stacking
   resolver`). The description states which *done when* criterion from
   [`docs/04-roadmap.md`](docs/04-roadmap.md) it satisfies, so review is checked against an
