@@ -82,8 +82,20 @@ the machine John is sitting at is usually the one that should author.
 
 Both machines push as the same GitHub account, so GitHub will not accept an *approve* or
 *request changes* review from either — it refuses those on your own pull request. Reviews land
-as comments, and the verdict is stated in the text. The rule is enforced by convention, not by
-the platform.
+as comments, and the verdict is stated in the text.
+
+Server-side branch protection is not available: GitHub gates both branch protection and
+rulesets behind a paid plan for private repositories. In its place, `.githooks/pre-push`
+refuses any push to `main`. **Each clone must enable it once:**
+
+```
+git config core.hooksPath .githooks
+```
+
+Git deliberately does not run hooks from a fresh clone without this, so a new machine is
+unprotected until the command is run. Deliberate override is `git push --no-verify`. The hook
+stops accidents, not a determined push — the reviewing rule above is still upheld by
+convention.
 
 This is a working discipline, not a security boundary — John owns both machines and can
 override it whenever he says so explicitly.
